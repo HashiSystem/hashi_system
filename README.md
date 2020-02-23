@@ -13,17 +13,132 @@ SlackからSlash Commandを入力し、出勤退勤時刻などを入力する�
 
 
 # Installation
+1. Googleアカウント作成
+
+1. slackワークスペース作成
+https://slack.com/intl/ja-jp/
+	1. 新しく作成
+
+1. GAS(Google Apps Script)準備
+	1. Googleドライブに移動
+	マイドライブ -> ＋新規 -> その他 -> アプリを追加
+
+	1. G Suite Marketplace
+	Google Apps Script -> インストール
+	権限 -> Googleアカウントでログイン -> インストール完了
+	マイドライブ -> ＋新規 -> その他 -> Google Apps Script
+	※マイドライブをリロードする必要あるかも？
+
+	1. プロジェクトを作成
+	「無題のプロジェクト」を選択して名称変更→「slack_app」に変更(ちょっと待つ)
+	コード.gs -> rename →「app.gs」に変更
+
+	1. GASライブラリ追加
+	リソース -> ライブラリ -> Add Library
+
+	1. Underscore
+	M3i7wmUA_5n0NSEaa6NnNqOBao7QLBR4j
+	(バージョン：2)
+
+	1. 公開
+	公開 -> ウェブアプリケーションとして導入
+	Project Version:    New (毎回Newを選びましょう)
+	Execute the app as: Me  (そのまま)
+	Who has access to the app: Anyone, even Anonymouse
+
+	Deployボタン -> 許可を確認 -> アカウント選択 -> 詳細リンク -> slack_app（安全ではないページ）に移動 -> 許可
+
+	1. 「slack_view」も「slack_app」と同様に作成＆公開
+
+	1. 「slack_get」も「slack_app」と同様に作成
+		1. index.html作成
+		ファイル -> New -> HTMLファイル
+	
+		1. 同様に公開
+
+
+1. slack app作成
+https://api.slack.com/apps
+「Create an App」ボタン
+	App Name: 勤怠管理
+	Development Slack Workspace: 作成したslackのワークスペース
+
+	1. Slash Commandsの作成
+	Features(左メニュー) -> Slash Commands
+		Create New Command
+		Command				/kintai
+		Request URL			slack_appの公開URL
+		Short Description	勤怠管理
+
+	1. Bot作成
+	Features(左メニュー) -> App Home
+		App Display NameのEditボタン押下
+		Display Name:		kintai
+		Default username:	kintai
+
+	1. OAuth & Permissions
+	Features(左メニュー) -> OAuth & Permissions
+		Install App
+		Bot User OAuth Access Token:	(GASからslackに投稿する際に必要)
+
+	1. Incoming Webhooks
+	Features(左メニュー) -> Incoming Webhooks
+		Activate Incoming Webhooks	Off -> On
+		Add New Webhooks To Workspace	投稿先チャンネルを選択
+
+	1. Interactive Components
+	Features(左メニュー) -> Interactive Components
+		Interactivity	Off -> On
+		Request URL		slack_viewの公開URL
+
+	※Botの許可方法とか順番かわったかも
+
+
+1. Googleスプレッドシート
+	1. 作成
+	googleのマイドライブ
+	新規 -> Googleスプレッドシート
+	ファイル -> 名前を変更:		勤怠
+	シートを作成
+		「user」シート
+		「template」シート
+		「Log」シート（デバッグ情報必要なければ不要）
+
+
+1. GASのプロパティ設定
+ファイル -> プロジェクトのプロパティ -> スクリプトのプロパティに追加
+
+	1. スプレッドシートID
+	スプレッドシートのURLからIDを抽出
+	https://docs.google.com/spreadsheets/d/[スプレッドシートID]/edit#gid=2129177994
+
+	プロパティ:		SPREAD_SHEET_ID
+	値:				[スプレッドシートID]
+	
+	各GASに設定する
+
+	1. OAuth & Permissions
+	slackのBot User OAuth Access Tokenをプロパティに設定
+
+	プロパティ:		OAUTH_ACCESS_TOKEN
+	値:				[Bot User OAuth Access Token]
+	
+	GASのslack_viewに設定する
+
+・月報出力GASのURL
+	GASのURLからIDを抽出
+	https://script.google.com/macros/s/[gas-id]/exec
+	
+	プロパティ:		SLACK_GET
+	値:				[gas-id]
+
+以上でInstallおわり(長くてすみません)
 
 
 # Usage
 
 - ユーザーの管理
 	- 勤怠スプレッドシートの「user」シートに登録
-
-| No| 名前   | slackユーザー名 | 休憩時間 | グループ | 参照権限 |
-|---|--------|-----------------|----------|----------|----------| 
-| 1 | 管理者 | slack.kanri     | 1:00     | GroupA   | all      |
-
 		- No				ユーザー連番です。PGで使用してません。
 		- 名前				ユーザーの名前です。勤怠シートがこの名前で作成されます。
 		- slackユーザー名	slackに登録したユーザー名です。
@@ -31,9 +146,13 @@ SlackからSlash Commandを入力し、出勤退勤時刻などを入力する�
 		- グループ			ユーザーの所属するグループです。空でもOK
 		- 参照権限			月報の参照権限です。ALL, グループ名, selfを設定。
 
+| No| 名前   | slackユーザー名 | 休憩時間 | グループ | 参照権限 |
+|---|--------|-----------------|----------|----------|----------| 
+| 1 | 管理者 | slack.kanri     | 1:00     | GroupA   | all      |
+
+
 - Slashコマンドの入力
-	- 「/kintai」コマンドを入力すると、登録してあるユーザーに
-	- 「出退勤の登録」「月報の出力」ボタンが表示されます。
+	- 「/kintai」コマンドを入力すると、登録してあるユーザーに「出退勤の登録」「月報の出力」ボタンが表示されます。
 
 
 # Note
