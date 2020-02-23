@@ -5,7 +5,7 @@ slackを利用して勤怠管理を行います。
 勤怠記録は、管理者のGoogleドライブに保存されます。
 
 
-## Features
+# Features
 
 SlackからSlash Commandを入力し、出勤退勤時刻などを入力することができます。
 
