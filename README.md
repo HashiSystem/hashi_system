@@ -1,19 +1,19 @@
 # kintai-slack-gas
 
-�ΑӊǗ���slack����s���܂��B
-gas(Google Apps Script)�ɂ����Google�h���C�u�ɋΑӋL�^���o�^����܂��B
+勤怠管理をslackから行います。
+gas(Google Apps Script)によってGoogleドライブに勤怠記録が登録されます。
 
-(README�쐬���E�E�j
+(README作成中・・）
 
 # Features
 
-Slack����Slash Command����͂��A�_�C�A���O�ɏo�ΑދΎ����Ȃǂ���͂��邱�Ƃ��ł��܂��B
-�܂��Axlsx�`���Ō���̏o�͂��s�����Ƃ��ł��܂��B
+SlackからSlash Commandを入力し、ダイアログに出勤退勤時刻などを入力することができます。
+また、xlsx形式で月報の出力を行うことができます。
 
 
 # Requirement
 
-�Ǘ��p��Google�A�J�E���g���ЂƂK�v�ɂȂ�܂��B
+管理用のGoogleアカウントがひとつ必要になります。
 
 
 # Installation
@@ -21,33 +21,33 @@ Slack����Slash Command����͂��A�_�C�A���O�ɏo�ΑދΎ����Ȃǂ���͂��邱�Ƃ��ł�
 
 # Usage
 
-�E���[�U�[�̊Ǘ�
-	�ΑӃX�v���b�h�V�[�g�́uuser�v�V�[�g�ɓo�^
-		(����)
-		#					�ԍ��ł��BPG�Ŏg�p���Ă܂���B
-		���O				���[�U�[�̖��O�ł��B�ΑӃV�[�g�����̖��O�ō쐬����܂��B
-		slack���[�U�[��		slack�ɓo�^�������[�U�[���ł��B
-		�x�e����			�Ζ����ԁi�Ζ��I������ - �Ζ��J�n�����j���������܂��B
-		�O���[�v			���[�U�[�̏�������O���[�v�ł��B��ł�OK
-		�Q�ƌ���			����̎Q�ƌ����ł��BALL, �O���[�v��, self��ݒ�B
+・ユーザーの管理
+	勤怠スプレッドシートの「user」シートに登録
+		(項目)
+		#					番号です。PGで使用してません。
+		名前				ユーザーの名前です。勤怠シートがこの名前で作成されます。
+		slackユーザー名		slackに登録したユーザー名です。
+		休憩時間			勤務時間（勤務終了時刻 - 勤務開始時刻）から引かれます。
+		グループ			ユーザーの所属するグループです。空でもOK
+		参照権限			月報の参照権限です。ALL, グループ名, selfを設定。
 
-�ESlash�R�}���h�̓���
-	�u/kintai�v�R�}���h����͂���ƁA�o�^���Ă��郆�[�U�[��
-	�u�o�ދ΂̓o�^�v�u����̏o�́v�{�^�����\������܂��B
+・Slashコマンドの入力
+	「/kintai」コマンドを入力すると、登録してあるユーザーに
+	「出退勤の登録」「月報の出力」ボタンが表示されます。
 
 
 # Note
  
-	�E�P���ȋΖ����Ԍv�Z�������Ă܂���i�Ζ��I������ - �Ζ��J�n���� - �x�e���ԁj
-	�E���͒l��validation�������萮�����`�F�b�N��������͖�����
-	�Eslack�̃^�C���A�E�g
-		�ŏ��ɋΑӓo�^����Əo�����B�������̂͂��܂������Ă�͂��E�E
-		�Ζ��f�[�^��������ƐS�z�B
-	�E�Ƃ���ǂ����̂킩��Ȃ��������Ă܂��B�i�K���j
+	・単純な勤務時間計算しかしてません（勤務終了時刻 - 勤務開始時刻 - 休憩時間）
+	・入力値のvalidationだったり整合性チェックだったりは未実装
+	・slackのタイムアウト
+		最初に勤怠登録すると出がち。処理自体はうまくいってるはず・・
+		勤務データが増えると心配。
+	・ところどころ訳のわからない処理してます。（適当）
  
 # Author
 
-* �͂��V�X�e��
+* はしシステム
 * slack.hashiken@gmail.com
  
 # License
