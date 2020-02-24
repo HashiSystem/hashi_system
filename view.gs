@@ -9,20 +9,20 @@
 var debug = true;
 var spApp = openSpreadsheet();
 /*
- * Debug—p
+ * Debugç”¨
  */
 function debugTest() {
-  // ƒfƒoƒbƒO—p
+  // ãƒ‡ãƒãƒƒã‚°ç”¨
 }
 /*
- * ƒƒOo—Í
+ * ãƒ­ã‚°å‡ºåŠ›
  */
 function writeLog(log_type, text) {
-  // ƒfƒoƒbƒOo—Í‚µ‚È‚¢‚Æ‚«‚¨‚í‚è
+  // ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›ã—ãªã„ã¨ããŠã‚ã‚Š
   if (!debug && log_type == 'debug') return;
   
   if (spApp) {
-    // LogƒV[ƒg
+    // Logã‚·ãƒ¼ãƒˆ
     var sheet = spApp.getSheetByName('Log');
     if (sheet) {
       var lastRow = sheet.getLastRow();
@@ -36,9 +36,9 @@ function writeLog(log_type, text) {
 //===========================================================
 
 /*
- * PostƒŠƒNƒGƒXƒgˆ—
+ * Postãƒªã‚¯ã‚¨ã‚¹ãƒˆå‡¦ç†
  */
-function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
+function doPost(e){ // e ã«POSTã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ãŒå…¥ã£ã¦ã„ã‚‹
   try {
     var payload = JSON.parse(e["parameter"]["payload"]);
     //writeLog('debug', payload);
@@ -46,7 +46,7 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
     var user = payload["user"]["name"];
     var type = payload["type"];
     if (type == 'block_actions') {
-      // modal•\¦
+      // modalè¡¨ç¤º
       var action_id = payload["actions"][0]["action_id"];
       var trigger = payload["trigger_id"];
       var token = PropertiesService.getScriptProperties().getProperty('OAUTH_ACCESS_TOKEN');
@@ -55,7 +55,7 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
       var title = '';
       var initial_date = '';
       if (action_id == 'timecard') {
-        title = '‹Î‘Ó“ü—Í';
+        title = 'å‹¤æ€ å…¥åŠ›';
         initial_date = formatDate(new Date());
         var view_json = makeKintaiView(title, user, initial_date);
         json_data = {
@@ -69,7 +69,7 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
         slackUrl = "https://slack.com/api/views.open";
         var response = UrlFetchApp.fetch(slackUrl, json_data);
       } else if (action_id == 'geppou') {
-        title = 'Œ•ñ';
+        title = 'æœˆå ±';
         initial_date = formatDate(new Date());
         var view_json = makeGeppouView(title, user, initial_date, trigger);
         json_data = {
@@ -83,13 +83,13 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
         slackUrl = "https://slack.com/api/views.open";
         var response = UrlFetchApp.fetch(slackUrl, json_data);
       } else if (action_id == 'modify_date') {
-        title = '‹Î‘ÓC³';
+        title = 'å‹¤æ€ ä¿®æ­£';
         initial_date = payload["actions"][0]["selected_date"];
         initial_date = formatDate3(initial_date);
         var view_json = makeKintaiView(title, user, initial_date);
         var view_id = payload["view"]["root_view_id"];
         var slackUrl = "https://slack.com/api/views.update";
-        // ‚¢‚Á‚½‚ñ‹ó‚É‚·‚é
+        // ã„ã£ãŸã‚“ç©ºã«ã™ã‚‹
         var view_empty = {
           "type": "modal",
           "title": {
@@ -99,7 +99,7 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
           },
           "close": {
               "type": "plain_text",
-              "text": "•Â‚¶‚é",
+              "text": "é–‰ã˜ã‚‹",
               "emoji": true
           },
           "blocks": []
@@ -128,56 +128,56 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
       var callback_id = payload["view"]["callback_id"];
       if (callback_id == 'view_kintai') {
         var values = payload["view"]["state"]["values"];
-        // “o˜^
+        // ç™»éŒ²
         var timecard = new Array();
         var val = '';
-        //timecard["date"]    = formatDate3(values["block_date"]["date"]["selected_date"]); // “ú•t
-        timecard["date"]    = payload["view"]["private_metadata"]; // “ú•t
+        //timecard["date"]    = formatDate3(values["block_date"]["date"]["selected_date"]); // æ—¥ä»˜
+        timecard["date"]    = payload["view"]["private_metadata"]; // æ—¥ä»˜
         val = values["block_start"]["start"];
-        timecard["start"]   = empValue(values["block_start"]["start"]["value"]);   // o‹Î
-        timecard["finish"]  = empValue(values["block_finish"]["finish"]["value"]); // ‘Ş‹Î
-        timecard["break"]   = empValue(values["block_break"]["break"]["value"]);   // ‹xŒe
+        timecard["start"]   = empValue(values["block_start"]["start"]["value"]);   // å‡ºå‹¤æ™‚åˆ»
+        timecard["finish"]  = empValue(values["block_finish"]["finish"]["value"]); // é€€å‹¤æ™‚åˆ»
+        timecard["break"]   = empValue(values["block_break"]["break"]["value"]);   // ä¼‘æ†©
         var selOpt = values["block_holiday"]["holiday"]["selected_option"];
-        timecard["holiday"] = selOpt ? selOpt["value"] : ''; // ‹x‰É
-        timecard["comment"] = empValue(values["block_comment"]["comment"]["value"]); // ƒRƒƒ“ƒg
+        timecard["holiday"] = selOpt ? selOpt["value"] : ''; // ä¼‘æš‡
+        timecard["comment"] = empValue(values["block_comment"]["comment"]["value"]); // ã‚³ãƒ¡ãƒ³ãƒˆ
       
         //writeLog('debug', 'user:' + user + ',timecard:' + timecard["date"]);
         writeKintai(user, timecard);
       } else if (callback_id == 'view_geppou') {
-        // Œ•ñƒ_ƒEƒ“ƒ[ƒh
+        // æœˆå ±ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰
         var token = PropertiesService.getScriptProperties().getProperty('OAUTH_ACCESS_TOKEN');
         var view_id = payload["view"]["root_view_id"];
         var trigger_id = payload["trigger_id"];
         
-        // o—Í‘ÎÛ
+        // å‡ºåŠ›å¯¾è±¡
         var out_text = "";
         var values = payload["view"]["state"]["values"];
         //writeLog("debug", JSON.stringify(values));
         var viewYYYYMM = values["block_yyyymm"]["action_yyyymm"]["selected_option"]["value"];
         var viewUser   = values["block_user"]["action_user"]["selected_option"]["value"];
 
-        // ƒ†[ƒU[î•ñ
+        // ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±
         var userInfo = readUserinfo(viewUser);
         if (!userInfo) {
-          throw new Error(viewUser + "‚³‚ñ‚Ìƒ†[ƒU[î•ñ‚ª‚ ‚è‚Ü‚¹‚ñ");
+          throw new Error(viewUser + "ã•ã‚“ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“");
         }
         var matches = viewYYYYMM.match(/([0-9]{4})([0-9]{2})/);
         if (matches && matches.length >= 3) {
           var gas = PropertiesService.getScriptProperties().getProperty('SLACK_GET');
           var param = 'user=' + viewUser + '&year=' + matches[1] + '&month=' + matches[2];
           var url = 'https://script.google.com/macros/s/' + gas + '/exec?' + param;
-          out_text = '<' + url + '|‹Î‘Ó - ' + userInfo[1] + '_' + matches[1] + '”N' + matches[2] + 'Œ>';
+          out_text = '<' + url + '|å‹¤æ€  - ' + userInfo[1] + '_' + matches[1] + 'å¹´' + matches[2] + 'æœˆ>';
         }
         var view_json = {
           "type": "modal",
           "title": {
             "type": "plain_text",
-            "text": "Œ•ñƒ_ƒEƒ“ƒ[ƒh",
+            "text": "æœˆå ±ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰",
             "emoji": true
           },
           "close": {
             "type": "plain_text",
-            "text": "•Â‚¶‚é",
+            "text": "é–‰ã˜ã‚‹",
             "emoji": true
           },
           "blocks": [
@@ -185,7 +185,7 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
               "type": "section",
               "text": {
                 "type": "mrkdwn",
-                "text": "V‚µ‚­ƒuƒ‰ƒEƒU‚ğŠJ‚¢‚ÄŒ•ñ‚ğƒ_ƒEƒ“ƒ[ƒh‚µ‚Ü‚·B"
+                "text": "æ–°ã—ããƒ–ãƒ©ã‚¦ã‚¶ã‚’é–‹ã„ã¦æœˆå ±ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã¾ã™ã€‚"
               }
             },
             {
@@ -215,28 +215,28 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
 }
 
 /*
- * ‹Î‘Óƒf[ƒ^æ“¾
+ * å‹¤æ€ ãƒ‡ãƒ¼ã‚¿å–å¾—
  */
 function getTimecard(user, dateStr) {
-  // ‹óƒf[ƒ^
+  // ç©ºãƒ‡ãƒ¼ã‚¿
   var timecard = new Array();
-  timecard["date"]    = dateStr; // “ú•t
-  timecard["start"]   = ''; // o‹Î
-  timecard["finish"]  = ''; // ‘Ş‹Î
-  timecard["break"]   = ''; // ‹xŒe
-  timecard["holiday"] = ''; // ‹x‰É
-  timecard["comment"] = ''; // ƒRƒƒ“ƒg
+  timecard["date"]    = dateStr; // æ—¥ä»˜
+  timecard["start"]   = ''; // å‡ºå‹¤æ™‚åˆ»
+  timecard["finish"]  = ''; // é€€å‹¤æ™‚åˆ»
+  timecard["break"]   = ''; // ä¼‘æ†©
+  timecard["holiday"] = ''; // ä¼‘æš‡
+  timecard["comment"] = ''; // ã‚³ãƒ¡ãƒ³ãƒˆ
   
-  // ƒXƒvƒŒƒbƒhƒV[ƒg‚ğŠJ‚­
+  // ã‚¹ãƒ—ãƒ¬ãƒƒãƒ‰ã‚·ãƒ¼ãƒˆã‚’é–‹ã
   spApp = openSpreadsheet();
-  // ƒ†[ƒU[î•ñæ“¾
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—
   var userInfo = readUserinfo(user);
   if (!userInfo) {
-    throw new Error(user + "‚³‚ñ‚Ìƒ†[ƒU[î•ñ‚ª‚ ‚è‚Ü‚¹‚ñ");
+    throw new Error(user + "ã•ã‚“ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“");
   }
-  // ƒ†[ƒU[‚Ì‹Î‘ÓƒV[ƒg
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®å‹¤æ€ ã‚·ãƒ¼ãƒˆ
   var sheet = spApp.getSheetByName(userInfo[1]);
-  // ƒf[ƒ^ŒŸõ
+  // ãƒ‡ãƒ¼ã‚¿æ¤œç´¢
   var idxRow = -1;
   if (sheet) {
     idxRow = findDateRow(sheet, dateStr);
@@ -273,18 +273,18 @@ function getTimecard(user, dateStr) {
 }
 
 /*
- * ‹Î‘Óƒ_ƒCƒAƒƒO•\¦
+ * å‹¤æ€ ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
  */
 function makeKintaiView(title, user, initial_date) {
   //writeLog('debug', 'action_id:' + action_id + ',initial_date:' + initial_date);
-  // ‹Î‘Óƒf[ƒ^‚Ìæ“¾
+  // å‹¤æ€ ãƒ‡ãƒ¼ã‚¿ã®å–å¾—
   var timecard = getTimecard(user, initial_date);
   var optHoliday = '[';
-  optHoliday += '{"text":{"type": "plain_text","text": "j“ú"},"value": "public"},';
-  optHoliday += '{"text":{"type": "plain_text","text": "Œß‘O”¼‹x"},"value": "before"},';
-  optHoliday += '{"text":{"type": "plain_text","text": "ŒßŒã”¼‹x"},"value": "after"},';
-  optHoliday += '{"text":{"type": "plain_text","text": "—L‹‹‹x‰É"},"value": "paid"},';
-  optHoliday += '{"text":{"type": "plain_text","text": "“Á•Ê‹x‰É"},"value": "special"}]';
+  optHoliday += '{"text":{"type": "plain_text","text": "ç¥æ—¥"},"value": "public"},';
+  optHoliday += '{"text":{"type": "plain_text","text": "åˆå‰åŠä¼‘"},"value": "before"},';
+  optHoliday += '{"text":{"type": "plain_text","text": "åˆå¾ŒåŠä¼‘"},"value": "after"},';
+  optHoliday += '{"text":{"type": "plain_text","text": "æœ‰çµ¦ä¼‘æš‡"},"value": "paid"},';
+  optHoliday += '{"text":{"type": "plain_text","text": "ç‰¹åˆ¥ä¼‘æš‡"},"value": "special"}]';
 
   var viewKintai = 
   {
@@ -298,7 +298,7 @@ function makeKintaiView(title, user, initial_date) {
     },
     "submit": {
       "type": "plain_text",
-      "text": "“o˜^",
+      "text": "ç™»éŒ²",
       "emoji": true
     },
     "close": {
@@ -312,7 +312,7 @@ function makeKintaiView(title, user, initial_date) {
         "block_id": "block_date",
         "text": {
           "type": "mrkdwn",
-          "text": "”NŒ“ú"
+          "text": "å¹´æœˆæ—¥"
         },
         "accessory": {
           "type": "datepicker",
@@ -320,7 +320,7 @@ function makeKintaiView(title, user, initial_date) {
           "initial_date": formatDate2(initial_date,'-'),
           "placeholder": {
             "type": "plain_text",
-            "text": "”NŒ“ú‘I‘ğ",
+            "text": "å¹´æœˆæ—¥é¸æŠ",
             "emoji": true
           }
         }
@@ -336,7 +336,7 @@ function makeKintaiView(title, user, initial_date) {
         },
         "label": {
           "type": "plain_text",
-          "text": "o‹Î",
+          "text": "å‡ºå‹¤æ™‚åˆ»",
           "emoji": true
         }
       },
@@ -351,7 +351,7 @@ function makeKintaiView(title, user, initial_date) {
         },
         "label": {
           "type": "plain_text",
-          "text": "‘Ş‹Î",
+          "text": "é€€å‹¤æ™‚åˆ»",
           "emoji": true
         }
       },
@@ -366,7 +366,7 @@ function makeKintaiView(title, user, initial_date) {
         },
         "label": {
           "type": "plain_text",
-          "text": "‹xŒeŠÔ",
+          "text": "ä¼‘æ†©æ™‚é–“",
           "emoji": true
         }
       },
@@ -379,14 +379,14 @@ function makeKintaiView(title, user, initial_date) {
           "action_id": "holiday",
           "placeholder": {
             "type": "plain_text",
-            "text": "‘ÎÛ‘I‘ğ",
+            "text": "å¯¾è±¡é¸æŠ",
             "emoji": true
           },
           "options": JSON.parse(optHoliday)
         },
         "label": {
           "type": "plain_text",
-          "text": "‹x‰É‘I‘ğ",
+          "text": "ä¼‘æš‡é¸æŠ",
           "emoji": true
         }
       },
@@ -402,13 +402,13 @@ function makeKintaiView(title, user, initial_date) {
         },
         "label": {
           "type": "plain_text",
-          "text": "ƒRƒƒ“ƒg",
+          "text": "ã‚³ãƒ¡ãƒ³ãƒˆ",
           "emoji": true
         }
       }
     ]
   };
-  // ‹x‰ÉƒfƒtƒHƒ‹ƒg
+  // ä¼‘æš‡ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
   if (timecard['holiday']) {
     var iniOptHoliday = '{"text":{"type": "plain_text","text": "' + id2holiday(timecard['holiday']) + '"},"value": "' + timecard['holiday'] + '"}';
     viewKintai['blocks'][4]['element']['initial_option'] = JSON.parse(iniOptHoliday);
@@ -418,22 +418,22 @@ function makeKintaiView(title, user, initial_date) {
 }
 
 /*
- * Œ•ñView•\¦
+ * æœˆå ±Viewè¡¨ç¤º
  */
 function makeGeppouView(title, user, initial_date, trigger) {
-  // Œ•ñ”NŒ
+  // æœˆå ±å¹´æœˆ
   var wkDate = new Date(initial_date);
   var year = wkDate.getFullYear();
   var month = ('0' + (wkDate.getMonth() + 1)).slice(-2);
   var optYYYYMM = '';
-  var iniOptYYYYMM = '{"text":{"type": "plain_text","text": "' + year + '”N' + month + 'Œ"},"value": "' + year + month + '"}';
-  // ‰ß‹‚P”N•ªo—Í‚Å‚«‚é‚æ
+  var iniOptYYYYMM = '{"text":{"type": "plain_text","text": "' + year + 'å¹´' + month + 'æœˆ"},"value": "' + year + month + '"}';
+  // éå»ï¼‘å¹´åˆ†å‡ºåŠ›ã§ãã‚‹ã‚ˆ
   for (var i=0; i<12; i++) {
     year = wkDate.getFullYear();
     month = ('0' + (wkDate.getMonth() + 1)).slice(-2);
     if (optYYYYMM) optYYYYMM += ',';
-    //options += '{"label": "' + year + '”N' + month + 'Œ","value": "' + year + month + '"}';
-    optYYYYMM += '{"text":{"type": "plain_text","text": "' + year + '”N' + month + 'Œ"},"value": "' + year + month + '"}';
+    //options += '{"label": "' + year + 'å¹´' + month + 'æœˆ","value": "' + year + month + '"}';
+    optYYYYMM += '{"text":{"type": "plain_text","text": "' + year + 'å¹´' + month + 'æœˆ"},"value": "' + year + month + '"}';
     wkDate.setMonth(wkDate.getMonth()-1);
   }
   optYYYYMM = '[' + optYYYYMM + ']';
@@ -446,7 +446,7 @@ function makeGeppouView(title, user, initial_date, trigger) {
                 "action_id": "action_yyyymm",
                 "placeholder": {
                     "type": "plain_text",
-                    "text": "”NŒ‘I‘ğ",
+                    "text": "å¹´æœˆé¸æŠ",
                     "emoji": true
                 },
                 "initial_option": JSON.parse(iniOptYYYYMM),
@@ -454,12 +454,12 @@ function makeGeppouView(title, user, initial_date, trigger) {
             },
             "label": {
                 "type": "plain_text",
-                "text": "”NŒ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢i‰ß‹‚P”N•ªj",
+                "text": "å¹´æœˆã‚’é¸æŠã—ã¦ãã ã•ã„ï¼ˆéå»ï¼‘å¹´åˆ†ï¼‰",
                 "emoji": true
             }
         };
   
-  // ƒ†[ƒU[‘I‘ğ
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼é¸æŠ
   var aryUser = getAryUser();
   var userInfo;
   var aryViewUser = new Array();
@@ -469,17 +469,17 @@ function makeGeppouView(title, user, initial_date, trigger) {
     }
   }
   if (!userInfo) {
-    throw new Error(user + "‚³‚ñ‚Ìƒ†[ƒU[î•ñ‚ª‚ ‚è‚Ü‚¹‚ñ");
+    throw new Error(user + "ã•ã‚“ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“");
   }
-  // QÆŒ ŒÀ
+  // å‚ç…§æ¨©é™
   if (userInfo[5] == 'all') {
-    // ‘Sˆõ
+    // å…¨å“¡
     aryViewUser = aryUser;
   } else if (userInfo[5] == 'self') {
-    // ©•ª‚¾‚¯
+    // è‡ªåˆ†ã ã‘
     aryViewUser.push(userInfo);
   } else {
-    // ©•ª‚ÌƒOƒ‹[ƒvQÆ
+    // è‡ªåˆ†ã®ã‚°ãƒ«ãƒ¼ãƒ—å‚ç…§
     for (var i in aryUser) {
       if (userInfo[4] == aryUser[i][4]) {
         aryViewUser.push(aryUser[i]);
@@ -504,7 +504,7 @@ function makeGeppouView(title, user, initial_date, trigger) {
                 "action_id": "action_user",
                 "placeholder": {
                     "type": "plain_text",
-                    "text": "‘ÎÛ‘I‘ğ",
+                    "text": "å¯¾è±¡é¸æŠ",
                     "emoji": true
                 },
                 "initial_option": JSON.parse(iniOptUser),
@@ -512,7 +512,7 @@ function makeGeppouView(title, user, initial_date, trigger) {
             },
             "label": {
                 "type": "plain_text",
-                "text": "Œ•ño—Í‘ÎÛ‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢",
+                "text": "æœˆå ±å‡ºåŠ›å¯¾è±¡ã‚’é¸æŠã—ã¦ãã ã•ã„",
                 "emoji": true
             }
         };
@@ -527,12 +527,12 @@ function makeGeppouView(title, user, initial_date, trigger) {
 	},
 	"submit": {
 		"type": "plain_text",
-		"text": "‘I‘ğ",
+		"text": "é¸æŠ",
 		"emoji": true
 	},
 	"close": {
 		"type": "plain_text",
-		"text": "•Â‚¶‚é",
+		"text": "é–‰ã˜ã‚‹",
 		"emoji": true
 	},
 	"blocks": [blockYYYYMM, blockUser]
@@ -541,25 +541,25 @@ function makeGeppouView(title, user, initial_date, trigger) {
 }
 
 /*
- * ‹Î‘Ó‘‚«‚İ
+ * å‹¤æ€ æ›¸ãè¾¼ã¿
  */
 function writeKintai(user, timecard) {
   //writeLog("debug", user + ':' + JSON.stringify(timecard));
-  // “ú•t(yyyy/mm/dd)
+  // æ—¥ä»˜(yyyy/mm/dd)
   var dateStr = formatDate3(timecard["date"]);
-  // ƒXƒvƒŒƒbƒhƒV[ƒg‚ğŠJ‚­
+  // ã‚¹ãƒ—ãƒ¬ãƒƒãƒ‰ã‚·ãƒ¼ãƒˆã‚’é–‹ã
   spApp = openSpreadsheet();
-  // ƒ†[ƒU[î•ñæ“¾
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—
   var userInfo = readUserinfo(user);
   if (!userInfo) {
-    throw new Error(user + "‚³‚ñ‚Ìƒ†[ƒU[î•ñ‚ª‚ ‚è‚Ü‚¹‚ñ");
+    throw new Error(user + "ã•ã‚“ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“");
   }
-  // ƒ†[ƒU[‚Ì‹Î‘ÓƒV[ƒg
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®å‹¤æ€ ã‚·ãƒ¼ãƒˆ
   var sheet = spApp.getSheetByName(userInfo[1]);
   //writeLog('debug', 'userInfo:' + userInfo);
   var idxRow = -1;
   if (!sheet) {
-    // ƒ†[ƒU[‚ÌƒV[ƒg‚ª‚È‚¢‚Æ‚«A—Œ^‚ğƒRƒs[‚µ‚ÄV‹Kì¬
+    // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®ã‚·ãƒ¼ãƒˆãŒãªã„ã¨ãã€é››å‹ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦æ–°è¦ä½œæˆ
     var temp = spApp.getSheetByName('template');
     sheet = temp.copyTo(spApp);
     sheet.setName(userInfo[1]);
@@ -568,24 +568,24 @@ function writeKintai(user, timecard) {
   }
   //writeLog('debug', 'idxRow:' + idxRow);
   if (idxRow < 0) {
-    // s’Ç‰Á
+    // è¡Œè¿½åŠ 
     idxRow = fillDateRow(sheet, dateStr, userInfo);
   }
   
-  // o‹Î
+  // å‡ºå‹¤
   sheet.getRange(idxRow,5).setValue(validHour(timecard["start"]));
-  // ‘Ş‹Î
+  // é€€å‹¤
   sheet.getRange(idxRow,6).setValue(validHour(timecard["finish"]));
-  // ‹xŒe
+  // ä¼‘æ†©
   sheet.getRange(idxRow,7).setValue(validHour(timecard["break"]));
-  // ‹x‰É
+  // ä¼‘æš‡
   sheet.getRange(idxRow,9).setValue(id2holiday(timecard["holiday"]));
-  // ƒRƒƒ“ƒg
+  // ã‚³ãƒ¡ãƒ³ãƒˆ
   sheet.getRange(idxRow,10).setValue(timecard["comment"]);
 }
 
 /*
- * ƒXƒvƒŒƒbƒhƒV[ƒgŠJ‚­
+ * ã‚¹ãƒ—ãƒ¬ãƒƒãƒ‰ã‚·ãƒ¼ãƒˆé–‹ã
  */
 function openSpreadsheet() {
   var id = PropertiesService.getScriptProperties().getProperty('SPREAD_SHEET_ID');
@@ -593,11 +593,11 @@ function openSpreadsheet() {
 }
 
 /*
- * ƒ†[ƒU[î•ñ“Ç‚İ‚İ
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±èª­ã¿è¾¼ã¿
  */
 function readUserinfo(in_user) {
   var aryUser = getAryUser();
-  // slackƒ†[ƒU[‚Ìs”Ô†‚ğæ“¾
+  // slackãƒ¦ãƒ¼ã‚¶ãƒ¼ã®è¡Œç•ªå·ã‚’å–å¾—
   var us = Underscore.load();
   var aryTrns = us.zip.apply(us, aryUser);
   var rowNum = aryTrns[2].indexOf(in_user);
@@ -607,7 +607,7 @@ function readUserinfo(in_user) {
 }
 
 function getAryUser() {
-  // ƒ†[ƒU[ƒV[ƒg
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚·ãƒ¼ãƒˆ
   var sheet = spApp.getSheetByName('user');
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
@@ -616,7 +616,7 @@ function getAryUser() {
 }
 
 /*
- * ”NŒ“ú ƒtƒH[ƒ}ƒbƒg
+ * å¹´æœˆæ—¥ ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
  */
 function formatDate(date) {
   date = valToDate(date);
@@ -631,7 +631,7 @@ function formatDate3(dateStr) {
 }
 
 /*
- * •ª•bƒtƒH[ƒ}ƒbƒg
+ * æ™‚åˆ†ç§’ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
  */
 function formatTime(date) {
   date = valToDate(date);
@@ -639,7 +639,7 @@ function formatTime(date) {
 }
 
 /*
- * date•ÏŠ·
+ * dateå¤‰æ›
  */
 function valToDate(val) {
   if (val instanceof Date) {
@@ -654,65 +654,65 @@ function valToDate(val) {
 }
 
 /*
- * ‹x“ú•ÏŠ·
+ * ä¼‘æ—¥å¤‰æ›
  */
 function holiday2id(holiday) {
-  if (holiday == 'j“ú') return 'public';
-  if (holiday == '‘O”¼') return 'before';
-  if (holiday == 'Œã”¼') return 'after';
-  if (holiday == '—L‹‹') return 'paid';
-  if (holiday == '“Á•Ê') return 'special';
+  if (holiday == 'ç¥æ—¥') return 'public';
+  if (holiday == 'å‰åŠ') return 'before';
+  if (holiday == 'å¾ŒåŠ') return 'after';
+  if (holiday == 'æœ‰çµ¦') return 'paid';
+  if (holiday == 'ç‰¹åˆ¥') return 'special';
   return '';
 }
 function id2holiday(holiday) {
-  if (holiday == 'public')  return 'j“ú';
-  if (holiday == 'before')  return '‘O”¼';
-  if (holiday == 'after')   return 'Œã”¼';
-  if (holiday == 'paid')    return '—L‹‹';
-  if (holiday == 'special') return '“Á•Ê';
+  if (holiday == 'public')  return 'ç¥æ—¥';
+  if (holiday == 'before')  return 'å‰åŠ';
+  if (holiday == 'after')   return 'å¾ŒåŠ';
+  if (holiday == 'paid')    return 'æœ‰çµ¦';
+  if (holiday == 'special') return 'ç‰¹åˆ¥';
   return '';
 }
 
 /*
- * ‹óƒf[ƒ^ƒZƒbƒg
+ * ç©ºãƒ‡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆ
  */
 function empValue(val) {
   if (val) return val;
   else     return '';
 }
 /*
- * —LŒøƒZƒbƒg
+ * æœ‰åŠ¹æ™‚åˆ»ã‚»ãƒƒãƒˆ
  */
 function validHour(str) {
-  // ‘SŠp¨”¼Šp
-  str = str.replace(/[‚O-‚X]/g, function(s) {
+  // å…¨è§’â†’åŠè§’
+  str = str.replace(/[ï¼-ï¼™]/g, function(s) {
       return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
   });
-  str = str.replace(/[F]/g, ':');
+  str = str.replace(/[ï¼š]/g, ':');
   return str;
 }
 
 /*
- * ”NŒ“úsŒŸõ
+ * å¹´æœˆæ—¥è¡Œæ¤œç´¢
  */
 function findDateRow(sheet, dateStr) {
-  // ÅŒã‚Ìs‚Ì“ú•t‚æ‚è‘å‚«‚©‚Á‚½‚çs’Ç‰Á
+  // æœ€å¾Œã®è¡Œã®æ—¥ä»˜ã‚ˆã‚Šå¤§ãã‹ã£ãŸã‚‰è¡Œè¿½åŠ 
   var lastRow = sheet.getLastRow();
   var lastDate = formatDate(sheet.getRange(lastRow,1).getValue());
   if (dateStr > lastDate) {
-    // ŠY“–‚È‚µ
+    // è©²å½“ãªã—
     return -1;
   }
-  // ÅŒã‚Ìs‚Ì“ú•t
+  // æœ€å¾Œã®è¡Œã®æ—¥ä»˜
   if (dateStr == lastDate) {
     return lastRow;
   }
-  // ”ÍˆÍ‚©‚ç’T‚·
+  // ç¯„å›²ã‹ã‚‰æ¢ã™
   var aryDate = sheet.getRange(2,1,lastRow,1).getValues();
   for (var i=aryDate.length-1; i>0; i--) {
     var wkDate = formatDate(aryDate[i]);
     if (dateStr == wkDate) {
-      // ƒf[ƒ^‚İ‚Â‚¯‚½
+      // ãƒ‡ãƒ¼ã‚¿ã¿ã¤ã‘ãŸ
       return i+2;
     }
   }
@@ -720,7 +720,7 @@ function findDateRow(sheet, dateStr) {
 }
 
 /*
- * s’Ç‰Á
+ * è¡Œè¿½åŠ 
  */
 function fillDateRow(sheet, dateStr, userInfo){
   var lastRow = sheet.getLastRow();
@@ -730,46 +730,46 @@ function fillDateRow(sheet, dateStr, userInfo){
   var lastDate    = '';
   var lastDateStr = '';
   
-  // “r’†‚¤‚ß‚é
+  // é€”ä¸­ã†ã‚ã‚‹
   var aryFill = new Array();
   if (lastRow <= 1) {
-    // V‹Kì¬(Œ©o‚µ‚¾‚¯)
+    // æ–°è¦ä½œæˆ(è¦‹å‡ºã—ã ã‘)
     idxRow = lastRow+1;
     lastDate = valToDate(dateStr);
-    lastDate.setDate(1); // 1“ú‚©‚ç‚Ìƒf[ƒ^
+    lastDate.setDate(1); // 1æ—¥ã‹ã‚‰ã®ãƒ‡ãƒ¼ã‚¿
     lastDateStr = formatDate(lastDate);
   } else {
-    // ŠÔ‚Ìƒf[ƒ^–„‚ß‚é
+    // é–“ã®ãƒ‡ãƒ¼ã‚¿åŸ‹ã‚ã‚‹
     lastDate    = sheet.getRange(lastRow,1).getValue();
     lastDateStr = formatDate(lastDate);
   }
   //writeLog('debug', 'wkDate:' + wkDateStr + ',lastDate:' + lastDateStr);
-  // ŠÔ‚Ìƒf[ƒ^–„‚ß‚é
+  // é–“ã®ãƒ‡ãƒ¼ã‚¿åŸ‹ã‚ã‚‹
   do {
     aryFill.push(wkDateStr);
-    // ˆê“ú‘O
+    // ä¸€æ—¥å‰
     wkDate.setDate(wkDate.getDate()-1);
     wkDateStr = formatDate(wkDate);
   } while(lastDateStr < wkDateStr);
   if (lastRow <= 1) {
-    // V‹Kì¬(Œ©o‚µ‚¾‚¯)
+    // æ–°è¦ä½œæˆ(è¦‹å‡ºã—ã ã‘)
     aryFill.push(lastDateStr);
   }
 
-  // ‘‚«‚İ
+  // æ›¸ãè¾¼ã¿
   var wkIdx = lastRow + aryFill.length;
   for (var i in aryFill) {
-    // ¼—ï
+    // è¥¿æš¦
     sheet.getRange(wkIdx,1).setValue(aryFill[i]);
-    // ”N
-    sheet.getRange(wkIdx,2).setValue('=text(A' + wkIdx + ',"yyyy”N")');
-    // Œ
-    sheet.getRange(wkIdx,3).setValue('=text(A' + wkIdx + ',"mmŒ")');
-    // “ú
+    // å¹´
+    sheet.getRange(wkIdx,2).setValue('=text(A' + wkIdx + ',"yyyyå¹´")');
+    // æœˆ
+    sheet.getRange(wkIdx,3).setValue('=text(A' + wkIdx + ',"mmæœˆ")');
+    // æ—¥
     sheet.getRange(wkIdx,4).setValue('=text(A' + wkIdx + ',"dd(ddd)")');
-    // ‹xŒeŠÔ
+    // ä¼‘æ†©æ™‚é–“
     sheet.getRange(wkIdx,7).setValue(userInfo[3]);
-    // ‹Î–±ŠÔ
+    // å‹¤å‹™æ™‚é–“
     sheet.getRange(wkIdx,8).setValue('=IF(F' +wkIdx+ '="","",F'+wkIdx+'-E'+wkIdx+'-G'+wkIdx+')');
     
     wkIdx--;
