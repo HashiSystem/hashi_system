@@ -10,14 +10,14 @@ var debug = true;
 var spApp = openSpreadsheet();
 var usApp = Underscore.load();
 /*
- * ƒƒOo—Í
+ * ãƒ­ã‚°å‡ºåŠ›
  */
 function writeLog(log_type, text) {
-  // ƒfƒoƒbƒOo—Í‚µ‚È‚¢‚Æ‚«‚¨‚í‚è
+  // ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›ã—ãªã„ã¨ããŠã‚ã‚Š
   if (!debug && log_type == 'debug') return;
   
   if (spApp) {
-    // LogƒV[ƒg
+    // Logã‚·ãƒ¼ãƒˆ
     var sheet = spApp.getSheetByName('Log');
     if (sheet) {
       var lastRow = sheet.getLastRow();
@@ -30,9 +30,9 @@ function writeLog(log_type, text) {
 }
 //===========================================================
 /*
- * PostƒŠƒNƒGƒXƒgˆ—
+ * Postãƒªã‚¯ã‚¨ã‚¹ãƒˆå‡¦ç†
  */
-function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
+function doPost(e){ // e ã«POSTã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ãŒå…¥ã£ã¦ã„ã‚‹
   try {
     //writeLog('debug', e.parameter);
 
@@ -47,23 +47,23 @@ function doPost(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
 }
 
 /*
- * SlackƒƒbƒZ[ƒW‰“š
+ * Slackãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å¿œç­”
  */
 function postSlackMessage(param) {
   var in_userName = param.user_name;
   var in_text     = param.text;
   var json_data;
   
-  // ƒ†[ƒU[î•ñæ“¾
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—
   var userInfo = readUserinfo(in_userName);
   if (!userInfo) {
-    writeLog('info', in_userName + ':ƒ†[ƒU[î•ñ‚ª‚ ‚è‚Ü‚¹‚ñ');
-    var out_text = in_userName + "‚³‚ñ‚Ìƒ†[ƒU[î•ñ‚ª‚ ‚è‚Ü‚¹‚ñ";
+    writeLog('info', in_userName + ':ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“');
+    var out_text = in_userName + "ã•ã‚“ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“";
     json_data = {
       text: out_text
     };
   } else {
-    // ‹Î‘Ó“ü—Í•\¦
+    // å‹¤æ€ å…¥åŠ›è¡¨ç¤º
     var initial_date = formatDate2(new Date(), '-');
     json_data =
     {
@@ -79,7 +79,7 @@ function postSlackMessage(param) {
                     "action_id": "timecard",
                     "text": {
                         "type": "plain_text",
-                        "text": "o‘Ş‹Î‚Ì“o˜^",
+                        "text": "å‡ºé€€å‹¤ã®ç™»éŒ²",
                         "emoji": true
                     }
                 }
@@ -95,7 +95,7 @@ function postSlackMessage(param) {
                     "action_id": "geppou",
                     "text": {
                         "type": "plain_text",
-                        "text": "Œ•ñ‚Ìo—Í",
+                        "text": "æœˆå ±ã®å‡ºåŠ›",
                         "emoji": true
                     }
                 }
@@ -107,7 +107,7 @@ function postSlackMessage(param) {
 }
 
 /*
- * ƒXƒvƒŒƒbƒhƒV[ƒgŠJ‚­
+ * ã‚¹ãƒ—ãƒ¬ãƒƒãƒ‰ã‚·ãƒ¼ãƒˆé–‹ã
  */
 function openSpreadsheet() {
   var id = PropertiesService.getScriptProperties().getProperty('SPREAD_SHEET_ID');
@@ -115,16 +115,16 @@ function openSpreadsheet() {
 }
 
 /*
- * ƒ†[ƒU[î•ñ“Ç‚İ‚İ
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±èª­ã¿è¾¼ã¿
  */
 function readUserinfo(in_user) {
-  // ƒ†[ƒU[ƒV[ƒg
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚·ãƒ¼ãƒˆ
   var sheet = spApp.getSheetByName('user');
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
 
   var aryUser = sheet.getRange(2,1,lastRow,lastCol).getValues();
-  // slackƒ†[ƒU[‚Ìs”Ô†‚ğæ“¾
+  // slackãƒ¦ãƒ¼ã‚¶ãƒ¼ã®è¡Œç•ªå·ã‚’å–å¾—
   //var us = Underscore.load();
   var aryTrns = usApp.zip.apply(usApp, aryUser);
   var rowNum = aryTrns[2].indexOf(in_user);
@@ -134,7 +134,7 @@ function readUserinfo(in_user) {
 }
 
 /*
- * ”NŒ“ú ƒtƒH[ƒ}ƒbƒg
+ * å¹´æœˆæ—¥ ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
  */
 function formatDate(date) {
   date = valToDate(date);
@@ -146,7 +146,7 @@ function formatDate2(date, sep) {
 }
 
 /*
- * •ª•bƒtƒH[ƒ}ƒbƒg
+ * æ™‚åˆ†ç§’ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
  */
 function formatTime(date) {
   date = valToDate(date);
@@ -154,7 +154,7 @@ function formatTime(date) {
 }
 
 /*
- * date•ÏŠ·
+ * dateå¤‰æ›
  */
 function valToDate(val) {
   if (val instanceof Date) {

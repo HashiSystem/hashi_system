@@ -11,14 +11,14 @@ var spApp = openSpreadsheet();
 var usApp = Underscore.load();
 
 /*
- * ƒƒOo—Í
+ * ãƒ­ã‚°å‡ºåŠ›
  */
 function writeLog(log_type, text) {
-  // ƒfƒoƒbƒOo—Í‚µ‚È‚¢‚Æ‚«‚¨‚í‚è
+  // ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›ã—ãªã„ã¨ããŠã‚ã‚Š
   if (!debug && log_type == 'debug') return;
   
   if (spApp) {
-    // LogƒV[ƒg
+    // Logã‚·ãƒ¼ãƒˆ
     var sheet = spApp.getSheetByName('Log');
     if (sheet) {
       var lastRow = sheet.getLastRow();
@@ -34,9 +34,9 @@ var url = '';
 var xlsName = '';
 
 /*
- * PostƒŠƒNƒGƒXƒgˆ—
+ * Postãƒªã‚¯ã‚¨ã‚¹ãƒˆå‡¦ç†
  */
-function doGet(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
+function doGet(e){ // e ã«POSTã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ãŒå…¥ã£ã¦ã„ã‚‹
   try {
     //writeLog('debug', e);
     var user  = e.parameter.user;
@@ -51,13 +51,13 @@ function doGet(e){ // e ‚ÉPOST‚³‚ê‚½ƒf[ƒ^‚ª“ü‚Á‚Ä‚¢‚é
   return HtmlService.createTemplateFromFile(template).evaluate();
 }
 /*
- * ŠO•”ƒtƒ@ƒCƒ‹æ‚è‚İ
+ * å¤–éƒ¨ãƒ•ã‚¡ã‚¤ãƒ«å–ã‚Šè¾¼ã¿
  */
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 /*
- * HTML‚É“n‚·
+ * HTMLã«æ¸¡ã™
  */
 function getUrl() {
   return url;
@@ -67,7 +67,7 @@ function getXlsName() {
 }
 
 /*
- * ƒXƒvƒŒƒbƒhƒV[ƒgŠJ‚­
+ * ã‚¹ãƒ—ãƒ¬ãƒƒãƒ‰ã‚·ãƒ¼ãƒˆé–‹ã
  */
 function openSpreadsheet() {
   var id = PropertiesService.getScriptProperties().getProperty('SPREAD_SHEET_ID');
@@ -75,24 +75,24 @@ function openSpreadsheet() {
 }
 
 /*
- * ‚Pƒ–Œ•ª‚Ì‹Î–±•\
+ * ï¼‘ãƒ¶æœˆåˆ†ã®å‹¤å‹™è¡¨
  */
 function viewKintai(user, year, month) {
   //writeLog('debug', user + ':' + year + '/' + month);
-  // ƒ†[ƒU[î•ñæ“¾
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±å–å¾—
   var userInfo = readUserinfo(user);
   if (!userInfo) {
-    throw new Error(user + ':ƒ†[ƒU[î•ñ‚ª‚ ‚è‚Ü‚¹‚ñB');
+    throw new Error(user + ':ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“ã€‚');
   }
-  // ƒ†[ƒU[‚Ì‹Î‘ÓƒV[ƒg
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®å‹¤æ€ ã‚·ãƒ¼ãƒˆ
   var sheet = spApp.getSheetByName(userInfo[1]);
   if (!sheet) {
-    throw new Error(userInfo[1] + ':‹Î‘Óî•ñ‚ª‚ ‚è‚Ü‚¹‚ñB');
+    throw new Error(userInfo[1] + ':å‹¤æ€ æƒ…å ±ãŒã‚ã‚Šã¾ã›ã‚“ã€‚');
   }
-  // ì‹Æ—pƒV[ƒg(‘O‰ñ‚ÌŒ•ñíœ)
+  // ä½œæ¥­ç”¨ã‚·ãƒ¼ãƒˆ(å‰å›ã®æœˆå ±å‰Šé™¤)
   var wkSheetList = spApp.getSheets();
   var wkSheet;
-  var regex = new RegExp('^' + userInfo[1] + '_\\d+”N\\d+Œ');
+  var regex = new RegExp('^' + userInfo[1] + '_\\d+å¹´\\d+æœˆ');
   for (var i in wkSheetList) {
     wkSheet = wkSheetList[i];
     var sheetName = wkSheet.getName();
@@ -100,10 +100,10 @@ function viewKintai(user, year, month) {
       spApp.deleteSheet(wkSheet);
     }
   }
-  // —Œ^‚ğƒRƒs[‚µ‚ÄV‹Kì¬
+  // é››å‹ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦æ–°è¦ä½œæˆ
   var temp = spApp.getSheetByName('template');
   wkSheet = temp.copyTo(spApp);
-  wkSheet.setName(userInfo[1] + '_' + year + '”N' + month + 'Œ');
+  wkSheet.setName(userInfo[1] + '_' + year + 'å¹´' + month + 'æœˆ');
   
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
@@ -120,7 +120,7 @@ function viewKintai(user, year, month) {
   var wkDateStr  = formatDate(wkDate);
   var endDateStr = formatDate(new Date(year, month, 0));
   var wkDay      = wkDate.getDay();
-  var aryWeek    = [ "“ú", "Œ", "‰Î", "…", "–Ø", "‹à", "“y" ];
+  var aryWeek    = [ "æ—¥", "æœˆ", "ç«", "æ°´", "æœ¨", "é‡‘", "åœŸ" ];
   //writeLog('debug', 'viewKintai:' + wkDateStr + '-' + endDateStr);
   var wkIdx = 2;
   var section = '';
@@ -144,25 +144,25 @@ function viewKintai(user, year, month) {
       holiday   = aryTrns[8][idxRow];
       comment   = aryTrns[9][idxRow];
     }
-    // ¼—ï
+    // è¥¿æš¦
     wkSheet.getRange(wkIdx,1).setValue(wkDateStr);
-    // ”N
-    wkSheet.getRange(wkIdx,2).setValue('=text(A' + wkIdx + ',"yyyy”N")');
-    // Œ
-    wkSheet.getRange(wkIdx,3).setValue('=text(A' + wkIdx + ',"mmŒ")');
-    // “ú
+    // å¹´
+    wkSheet.getRange(wkIdx,2).setValue('=text(A' + wkIdx + ',"yyyyå¹´")');
+    // æœˆ
+    wkSheet.getRange(wkIdx,3).setValue('=text(A' + wkIdx + ',"mmæœˆ")');
+    // æ—¥
     wkSheet.getRange(wkIdx,4).setValue('=text(A' + wkIdx + ',"dd(ddd)")');
-    // o‹Î
+    // å‡ºå‹¤æ™‚åˆ»
     wkSheet.getRange(wkIdx,5).setValue(startTime);
-    // ‘Ş‹Î
+    // é€€å‹¤æ™‚åˆ»
     wkSheet.getRange(wkIdx,6).setValue(endTime);
-    // ‹xŒeŠÔ
+    // ä¼‘æ†©æ™‚é–“
     wkSheet.getRange(wkIdx,7).setValue(breakTime);
-    // ‹Î–±ŠÔ
+    // å‹¤å‹™æ™‚é–“
     wkSheet.getRange(wkIdx,8).setValue('=IF(F' +wkIdx+ '="","",F'+wkIdx+'-E'+wkIdx+'-G'+wkIdx+')');
-    // ‹x‰É
+    // ä¼‘æš‡
     wkSheet.getRange(wkIdx,9).setValue(holiday);
-    // •â‘«
+    // è£œè¶³
     wkSheet.getRange(wkIdx,10).setValue(comment);
     
     wkDate.setDate(wkDate.getDate()+1);
@@ -170,30 +170,30 @@ function viewKintai(user, year, month) {
     wkDay      = wkDate.getDay();
     wkIdx++;
   }
-  // ‡Œv
-  wkSheet.getRange(wkIdx,7).setValue('‡Œv');
+  // åˆè¨ˆ
+  wkSheet.getRange(wkIdx,7).setValue('åˆè¨ˆ');
   wkSheet.getRange(wkIdx,8).setValue('=SUM(H2:H' + (wkIdx-1) + ')');
   wkSheet.getRange(wkIdx,8).setNumberFormat('[h]:mm:ss');
   
-  // ƒ_ƒEƒ“ƒ[ƒh
+  // ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰
   var sid = PropertiesService.getScriptProperties().getProperty('SPREAD_SHEET_ID');
   var gid = wkSheet.getSheetId();
   url = 'https://docs.google.com/spreadsheets/d/' + sid + '/export?gid=' + gid + '&exportFormat=xlsx'
   url += '&access_token=' + ScriptApp.getOAuthToken();
-  xlsName = userInfo[1] + '_' + year + '”N' + month + 'Œ.xlsx';
+  xlsName = userInfo[1] + '_' + year + 'å¹´' + month + 'æœˆ.xlsx';
 }
 
 /*
- * ƒ†[ƒU[î•ñ“Ç‚İ‚İ
+ * ãƒ¦ãƒ¼ã‚¶ãƒ¼æƒ…å ±èª­ã¿è¾¼ã¿
  */
 function readUserinfo(in_user) {
-  // ƒ†[ƒU[ƒV[ƒg
+  // ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚·ãƒ¼ãƒˆ
   var sheet = spApp.getSheetByName('user');
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
 
   var aryUser = sheet.getRange(2,1,lastRow,lastCol).getValues();
-  // slackƒ†[ƒU[‚Ìs”Ô†‚ğæ“¾
+  // slackãƒ¦ãƒ¼ã‚¶ãƒ¼ã®è¡Œç•ªå·ã‚’å–å¾—
   var aryTrns = usApp.zip.apply(usApp, aryUser);
   var rowNum = aryTrns[2].indexOf(in_user);
   if (rowNum < 0) return null;
@@ -202,7 +202,7 @@ function readUserinfo(in_user) {
 }
 
 /*
- * ”NŒ“ú ƒtƒH[ƒ}ƒbƒg
+ * å¹´æœˆæ—¥ ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
  */
 function formatDate(date) {
   date = valToDate(date);
@@ -210,7 +210,7 @@ function formatDate(date) {
 }
 
 /*
- * •ª•bƒtƒH[ƒ}ƒbƒg
+ * æ™‚åˆ†ç§’ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
  */
 function formatTime(date) {
   date = valToDate(date);
@@ -218,7 +218,7 @@ function formatTime(date) {
 }
 
 /*
- * date•ÏŠ·
+ * dateå¤‰æ›
  */
 function valToDate(val) {
   if (val instanceof Date) {
