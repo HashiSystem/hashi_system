@@ -11,13 +11,26 @@ SlackからSlash Commandを入力し、出勤退勤時刻などを入力する�
 
 また、xlsx形式で月報の出力を行うことができます。
 
+[/kintai]  
+┣ [出退勤の登録]ボタン  
+┃　┗ modal表示  
+┃　　　┣ 年月日 (変更すると入力項目を取得しなおします)  
+┃　　　┣ 出勤時刻  
+┃　　　┣ 退勤時刻  
+┃　　　┣ 休憩時間  
+┃　　　┣ 休暇選択  
+┃　　　┗ コメント  
+┗ [月報の出力]ボタン  
+　　┗ modal表示  
+　　　　┣ 年月選択  
+　　　　┗ 出力対象選択（参照権限が設定できます）  
 
 # Installation
 1. Googleアカウント作成
 
 1. slackワークスペース作成  
 https://slack.com/intl/ja-jp/  
-	1. 新しく作成  
+新しく作成してください。  
 
 1. GAS(Google Apps Script)準備  
 	1. Googleドライブに移動  
@@ -181,6 +194,8 @@ https://api.slack.com/apps
 	・slackのタイムアウト  
 		最初に勤怠登録すると出がち。処理自体はうまくいってるはず...  
 		勤務データが増えると心配。
+	
+	・modalのviews.updateがうまくいかない・・。iphone, androidだと上手く更新されません。
  
 # Author
 
