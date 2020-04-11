@@ -20,7 +20,7 @@ function debugTest() {
 function writeLog(log_type, text) {
   // デバッグ出力しないときおわり
   if (!debug && log_type == 'debug') return;
-  
+
   if (spApp) {
     // Logシート
     var sheet = spApp.getSheetByName('Log');
@@ -42,7 +42,7 @@ function doPost(e){ // e にPOSTされたデータが入っている
   try {
     var payload = JSON.parse(e["parameter"]["payload"]);
     //writeLog('debug', payload);
-    
+
     var user = payload["user"]["name"];
     var type = payload["type"];
     if (type == 'block_actions') {
@@ -68,6 +68,7 @@ function doPost(e){ // e にPOSTされたデータが入っている
         };
         slackUrl = "https://slack.com/api/views.open";
         var response = UrlFetchApp.fetch(slackUrl, json_data);
+        //writeLog('debug', 'views.open:' + response);
       } else if (action_id == 'geppou') {
         title = '月報';
         initial_date = formatDate(new Date());
@@ -83,18 +84,43 @@ function doPost(e){ // e にPOSTされたデータが入っている
         slackUrl = "https://slack.com/api/views.open";
         var response = UrlFetchApp.fetch(slackUrl, json_data);
       } else if (action_id == 'modify_date') {
+        //writeLog('debug', 'views.update:' + JSON.stringify(payload["view"]));
         title = '勤怠修正';
         initial_date = payload["actions"][0]["selected_date"];
         initial_date = formatDate3(initial_date);
         var view_json = makeKintaiView(title, user, initial_date);
+        json_data = {
+          "method": "post",
+          "payload": {
+            "token": token, // OAuth_token
+            "trigger_id":  trigger,
+            "view": JSON.stringify(view_json)
+          }
+        };
+        slackUrl = "https://slack.com/api/views.open";
+        var response = UrlFetchApp.fetch(slackUrl, json_data);
+        /**
         var view_id = payload["view"]["root_view_id"];
+        var trigger_id = payload["trigger_id"];
+        var json_data = {
+          "method": "post",
+          "payload": {
+            "token": token, // OAuth_token
+            "trigger_id":  trigger_id,
+            "view": JSON.stringify(view_json)
+          }
+        };
+        var slackUrl = "https://slack.com/api/views.push";
+        var response = UrlFetchApp.fetch(slackUrl, json_data);
+        **/
+        /**
         var slackUrl = "https://slack.com/api/views.update";
         // いったん空にする
         var view_empty = {
           "type": "modal",
           "title": {
               "type": "plain_text",
-              "text": title,
+              "text": "処理中",
               "emoji": true
           },
           "close": {
@@ -102,7 +128,16 @@ function doPost(e){ // e にPOSTされたデータが入っている
               "text": "閉じる",
               "emoji": true
           },
-          "blocks": []
+          "blocks": [
+          {
+            "type": "section",
+            "text": {
+              "type": "plain_text",
+              "text": "処理中です..",
+              "emoji": true
+            }
+          }
+          ]
         };
         var json_data_update = {
           "method": "post",
@@ -122,33 +157,40 @@ function doPost(e){ // e にPOSTされたデータが入っている
           }
         };
         var response = UrlFetchApp.fetch(slackUrl, json_data_update);
+        **/
       }
     } else if (type == 'view_submission') {
       //writeLog('debug', JSON.stringify(payload["view"]));
       var callback_id = payload["view"]["callback_id"];
       if (callback_id == 'view_kintai') {
         var values = payload["view"]["state"]["values"];
+        //writeLog('debug', JSON.stringify(values));
         // 登録
         var timecard = new Array();
         var val = '';
-        //timecard["date"]    = formatDate3(values["block_date"]["date"]["selected_date"]); // 日付
-        timecard["date"]    = payload["view"]["private_metadata"]; // 日付
-        val = values["block_start"]["start"];
+        timecard["date"]    = formatDate3(values["block_date"]["date"]["selected_date"]); // 日付
+        //timecard["date"]    = payload["view"]["private_metadata"]; // 日付
         timecard["start"]   = empValue(values["block_start"]["start"]["value"]);   // 出勤時刻
         timecard["finish"]  = empValue(values["block_finish"]["finish"]["value"]); // 退勤時刻
         timecard["break"]   = empValue(values["block_break"]["break"]["value"]);   // 休憩
-        var selOpt = values["block_holiday"]["holiday"]["selected_option"];
+        var selOpt = '';
+        if (values["block_holiday"]) selOpt = values["block_holiday"]["holiday"]["selected_option"];
         timecard["holiday"] = selOpt ? selOpt["value"] : ''; // 休暇
         timecard["comment"] = empValue(values["block_comment"]["comment"]["value"]); // コメント
-      
-        //writeLog('debug', 'user:' + user + ',timecard:' + timecard["date"]);
+
         writeKintai(user, timecard);
+        /**
+        var json_clear = {
+          "response_action": "clear"
+        };
+        return ContentService.createTextOutput(JSON.stringify(json_clear)).setMimeType(ContentService.MimeType.JSON);
+        **/
       } else if (callback_id == 'view_geppou') {
         // 月報ダウンロード
         var token = PropertiesService.getScriptProperties().getProperty('OAUTH_ACCESS_TOKEN');
         var view_id = payload["view"]["root_view_id"];
         var trigger_id = payload["trigger_id"];
-        
+
         // 出力対象
         var out_text = "";
         var values = payload["view"]["state"]["values"];
@@ -226,7 +268,7 @@ function getTimecard(user, dateStr) {
   timecard["break"]   = ''; // 休憩
   timecard["holiday"] = ''; // 休暇
   timecard["comment"] = ''; // コメント
-  
+
   // スプレッドシートを開く
   spApp = openSpreadsheet();
   // ユーザー情報取得
@@ -273,7 +315,7 @@ function getTimecard(user, dateStr) {
 }
 
 /*
- * 勤怠ダイアログ表示
+ * 勤怠mordal表示
  */
 function makeKintaiView(title, user, initial_date) {
   //writeLog('debug', 'action_id:' + action_id + ',initial_date:' + initial_date);
@@ -286,7 +328,7 @@ function makeKintaiView(title, user, initial_date) {
   optHoliday += '{"text":{"type": "plain_text","text": "有給休暇"},"value": "paid"},';
   optHoliday += '{"text":{"type": "plain_text","text": "特別休暇"},"value": "special"}]';
 
-  var viewKintai = 
+  var viewKintai =
   {
     "type": "modal",
     "callback_id": "view_kintai",
@@ -307,6 +349,7 @@ function makeKintaiView(title, user, initial_date) {
       "emoji": true
     },
     "blocks": [
+      /***
       {
         "type": "section",
         "block_id": "block_date",
@@ -325,6 +368,26 @@ function makeKintaiView(title, user, initial_date) {
           }
         }
       },
+      ***/
+      {
+		"type": "input",
+        "block_id": "block_date",
+			"element": {
+				"type": "datepicker",
+				"initial_date": formatDate2(initial_date,'-'),
+                "action_id": "date",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "年月日選択",
+					"emoji": true
+				}
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "年月日",
+				"emoji": true
+			}
+		},
       {
         "type": "input",
         "optional": true,
@@ -437,7 +500,7 @@ function makeGeppouView(title, user, initial_date, trigger) {
     wkDate.setMonth(wkDate.getMonth()-1);
   }
   optYYYYMM = '[' + optYYYYMM + ']';
-  var blockYYYYMM =         
+  var blockYYYYMM =
       {
             "type": "input",
             "block_id": "block_yyyymm",
@@ -458,7 +521,7 @@ function makeGeppouView(title, user, initial_date, trigger) {
                 "emoji": true
             }
         };
-  
+
   // ユーザー選択
   var aryUser = getAryUser();
   var userInfo;
@@ -495,7 +558,7 @@ function makeGeppouView(title, user, initial_date, trigger) {
   }
   optUser = '[' + optUser + ']';
   //writeLog('debug', optUser);
-  var blockUser =         
+  var blockUser =
       {
             "type": "input",
             "block_id": "block_user",
@@ -516,7 +579,7 @@ function makeGeppouView(title, user, initial_date, trigger) {
                 "emoji": true
             }
         };
-      
+
   var view_json = {
 	"type": "modal",
     "callback_id": "view_geppou",
@@ -571,7 +634,7 @@ function writeKintai(user, timecard) {
     // 行追加
     idxRow = fillDateRow(sheet, dateStr, userInfo);
   }
-  
+
   // 出勤
   sheet.getRange(idxRow,5).setValue(validHour(timecard["start"]));
   // 退勤
@@ -602,7 +665,7 @@ function readUserinfo(in_user) {
   var aryTrns = us.zip.apply(us, aryUser);
   var rowNum = aryTrns[2].indexOf(in_user);
   if (rowNum < 0) return null;
- 
+
   return aryUser[rowNum];
 }
 
@@ -724,12 +787,12 @@ function findDateRow(sheet, dateStr) {
  */
 function fillDateRow(sheet, dateStr, userInfo){
   var lastRow = sheet.getLastRow();
-  
+
   var wkDate      = valToDate(dateStr);
   var wkDateStr   = dateStr;
   var lastDate    = '';
   var lastDateStr = '';
-  
+
   // 途中うめる
   var aryFill = new Array();
   if (lastRow <= 1) {
@@ -771,7 +834,7 @@ function fillDateRow(sheet, dateStr, userInfo){
     sheet.getRange(wkIdx,7).setValue(userInfo[3]);
     // 勤務時間
     sheet.getRange(wkIdx,8).setValue('=IF(F' +wkIdx+ '="","",F'+wkIdx+'-E'+wkIdx+'-G'+wkIdx+')');
-    
+
     wkIdx--;
   }
   return lastRow + aryFill.length;

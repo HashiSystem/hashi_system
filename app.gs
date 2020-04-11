@@ -15,7 +15,7 @@ var usApp = Underscore.load();
 function writeLog(log_type, text) {
   // デバッグ出力しないときおわり
   if (!debug && log_type == 'debug') return;
-  
+
   if (spApp) {
     // Logシート
     var sheet = spApp.getSheetByName('Log');
@@ -53,7 +53,7 @@ function postSlackMessage(param) {
   var in_userName = param.user_name;
   var in_text     = param.text;
   var json_data;
-  
+
   // ユーザー情報取得
   var userInfo = readUserinfo(in_userName);
   if (!userInfo) {
@@ -88,6 +88,23 @@ function postSlackMessage(param) {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
+                    "text": "修正する場合は日付を選択してください"
+                },
+                "accessory": {
+                    "type": "datepicker",
+                    "action_id": "modify_date",
+                    "initial_date": initial_date,
+                    "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select a date",
+                        "emoji": true
+                    }
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
                     "text": " "
                 },
                 "accessory": {
@@ -101,7 +118,7 @@ function postSlackMessage(param) {
                 }
             }
         ]
-    };  
+    };
   }
   return ContentService.createTextOutput(JSON.stringify(json_data)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -129,7 +146,7 @@ function readUserinfo(in_user) {
   var aryTrns = usApp.zip.apply(usApp, aryUser);
   var rowNum = aryTrns[2].indexOf(in_user);
   if (rowNum < 0) return null;
- 
+
   return aryUser[rowNum];
 }
 
@@ -167,4 +184,3 @@ function valToDate(val) {
     return new Date(val);
   }
 }
-

@@ -11,12 +11,18 @@ var spApp = openSpreadsheet();
 var usApp = Underscore.load();
 
 /*
+ * Debug用
+ */
+function debugTest() {
+  //postSlackMessage('slack.g5hnsfwv','おは');
+}
+/*
  * ログ出力
  */
 function writeLog(log_type, text) {
   // デバッグ出力しないときおわり
   if (!debug && log_type == 'debug') return;
-  
+
   if (spApp) {
     // Logシート
     var sheet = spApp.getSheetByName('Log');
@@ -32,6 +38,7 @@ function writeLog(log_type, text) {
 //===========================================================
 var url = '';
 var xlsName = '';
+var xlsBlob;
 
 /*
  * Postリクエスト処理
@@ -39,6 +46,7 @@ var xlsName = '';
 function doGet(e){ // e にPOSTされたデータが入っている
   try {
     //writeLog('debug', e);
+    //execQue(e.parameter.row);
     var user  = e.parameter.user;
     var year  = e.parameter.year;
     var month = e.parameter.month;
@@ -65,6 +73,10 @@ function getUrl() {
 function getXlsName() {
   return xlsName;
 }
+function getXlsBlob() {
+  writeLog('debug', xlsBlob);
+  return xlsBlob;
+}
 
 /*
  * スプレッドシート開く
@@ -75,10 +87,29 @@ function openSpreadsheet() {
 }
 
 /*
+ * que実行
+ */
+function execQue(row) {
+  // queシート
+  var sheet = spApp.getSheetByName('que');
+  if (sheet) {
+    var func_name = sheet.getRange(row,2).getValue();
+    var func_para = sheet.getRange(row,3).getValue();
+    func_para = func_para.split(',');
+    if (func_name == 'viewKintai') {
+      return viewKintai(func_para[0], Number(func_para[1]), Number(func_para[2]));
+    }
+  }
+  return '処理済です。';
+}
+
+/*
  * １ヶ月分の勤務表
  */
 function viewKintai(user, year, month) {
   //writeLog('debug', user + ':' + year + '/' + month);
+  // スプレッドシートを開く
+  //spApp = openSpreadsheet();
   // ユーザー情報取得
   var userInfo = readUserinfo(user);
   if (!userInfo) {
@@ -104,7 +135,7 @@ function viewKintai(user, year, month) {
   var temp = spApp.getSheetByName('template');
   wkSheet = temp.copyTo(spApp);
   wkSheet.setName(userInfo[1] + '_' + year + '年' + month + '月');
-  
+
   var lastRow = sheet.getLastRow();
   var lastCol = sheet.getLastColumn();
   var aryKintai = sheet.getRange(2,1,lastRow,lastCol).getValues();
@@ -125,7 +156,7 @@ function viewKintai(user, year, month) {
   var wkIdx = 2;
   var section = '';
   var fields  = '';
-  while (wkDateStr < endDateStr) {
+  while (wkDateStr <= endDateStr) {
     //var idxRow = findDateRow(sheet, wkDateStr);
     var idxRow = aryDate.indexOf(wkDateStr);
     var wkTime;
@@ -164,7 +195,7 @@ function viewKintai(user, year, month) {
     wkSheet.getRange(wkIdx,9).setValue(holiday);
     // 補足
     wkSheet.getRange(wkIdx,10).setValue(comment);
-    
+
     wkDate.setDate(wkDate.getDate()+1);
     wkDateStr  = formatDate(wkDate);
     wkDay      = wkDate.getDay();
@@ -174,13 +205,22 @@ function viewKintai(user, year, month) {
   wkSheet.getRange(wkIdx,7).setValue('合計');
   wkSheet.getRange(wkIdx,8).setValue('=SUM(H2:H' + (wkIdx-1) + ')');
   wkSheet.getRange(wkIdx,8).setNumberFormat('[h]:mm:ss');
-  
+
   // ダウンロード
   var sid = PropertiesService.getScriptProperties().getProperty('SPREAD_SHEET_ID');
   var gid = wkSheet.getSheetId();
   url = 'https://docs.google.com/spreadsheets/d/' + sid + '/export?gid=' + gid + '&exportFormat=xlsx'
+  //url = 'https://docs.google.com/spreadsheets/d/' + sid + '/export?gid=' + gid + '&exportFormat=pdf'
   url += '&access_token=' + ScriptApp.getOAuthToken();
   xlsName = userInfo[1] + '_' + year + '年' + month + '月.xlsx';
+  //xlsBlob = UrlFetchApp.fetch(url, {headers: {'Authorization': 'Bearer ' +  ScriptApp.getOAuthToken()}}).getBlob().setName(xlsName);
+  //xlsBlob = UrlFetchApp.fetch(url, {headers: {'Authorization': 'Bearer ' +  ScriptApp.getOAuthToken()}}).getContent();
+  //xlsBlob = UrlFetchApp.fetch(url, {headers: {'Authorization': 'Bearer ' +  ScriptApp.getOAuthToken()}}).getBlob();
+  //DriveApp.createFile(xlsBlob);
+
+  // 作業用シート削除
+  //spApp.deleteSheet(wkSheet);
+  //return '<a href="' + url + '">こちらからダウンロード</a>';
 }
 
 /*
@@ -194,10 +234,11 @@ function readUserinfo(in_user) {
 
   var aryUser = sheet.getRange(2,1,lastRow,lastCol).getValues();
   // slackユーザーの行番号を取得
+  //var us = Underscore.load();
   var aryTrns = usApp.zip.apply(usApp, aryUser);
   var rowNum = aryTrns[2].indexOf(in_user);
   if (rowNum < 0) return null;
- 
+
   return aryUser[rowNum];
 }
 
@@ -230,4 +271,20 @@ function valToDate(val) {
   } else {
     return new Date(val);
   }
+}
+
+/*
+ * slackにメッセージ送信
+ */
+function postSlackMessage(user, message) {
+  var token = PropertiesService.getScriptProperties().getProperty('OAUTH_ACCESS_TOKEN');
+  var slackApp = SlackApp.create(token); //SlackApp インスタンスの取得
+
+  var options = {
+    channelId: "#勤怠管理", //チャンネル名
+    userName: user,
+    message: message
+  };
+
+  slackApp.postMessage(options.channelId, options.message, {username: options.userName});
 }
